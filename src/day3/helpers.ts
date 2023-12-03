@@ -13,20 +13,9 @@ export function getRegexMatches(
   return matches;
 }
 
-export function findIndex(
-  index: number,
-  multipliers: { [key: string]: number }[]
-): number {
-  const match: { [key: string]: number } = multipliers.find(
-    (val) => val[index]
-  ) as { [key: string]: number };
-  return Object.values(match)[0];
-}
-
 export function getMatrixComparison(
-  rowsToCompare: { value: string; indexInCollection: number }[],
-  values: { number: number; index: string },
-  uniqueMultipliers: { [key: string]: number }[]
+  rowsToCompare: { stringValue: string; uniqueMultiplier: number }[],
+  values: { number: number; index: string }
 ): {
   value: string;
   uniqueIndex: number;
@@ -37,42 +26,40 @@ export function getMatrixComparison(
   }[] = [];
   rowsToCompare.forEach((comp) => {
     items.push({
-      value: comp.value.charAt(Number(values.index) - 1),
-      uniqueIndex:
-        findIndex(comp.indexInCollection, uniqueMultipliers) *
-        Number(values.index),
+      value: comp.stringValue.charAt(Number(values.index) - 1),
+      uniqueIndex: comp.uniqueMultiplier * Number(values.index),
     });
     items.push({
-      value: comp.value.charAt(
+      value: comp.stringValue.charAt(
         Number(values.index) + Number(String(values.number).length)
       ),
       uniqueIndex:
-        findIndex(comp.indexInCollection, uniqueMultipliers) *
+        comp.uniqueMultiplier *
         (Number(values.index) + Number(String(values.number).length) + 1),
     });
     for (let i = 0; i < String(values.number).length; i++) {
       items.push({
-        value: comp.value.charAt(Number(values.index + i)),
-        uniqueIndex:
-          findIndex(comp.indexInCollection, uniqueMultipliers) *
-          Number(values.index + i + 1),
+        value: comp.stringValue.charAt(Number(values.index + i)),
+        uniqueIndex: comp.uniqueMultiplier * Number(values.index + i + 1),
       });
     }
   });
   return items;
 }
 
-export function multiplyValidGears(
+export function calculatePowersSum(
   gears: { [key: string]: number[] }[]
-): number[] {
-  return gears
-    .map((item) => {
-      const flatten = Object.values(item).flat();
-      const isValid = flatten.length > 1;
-      if (isValid) {
-        const sum = flatten.reduce((a, b) => a * b, 1);
-        return sum;
-      }
-    })
-    .filter((val) => val) as number[];
+): number {
+  return (
+    gears
+      .map((item) => {
+        const value = Object.values(item)[0];
+        const isValid = value.length > 1;
+        if (isValid) {
+          const sum = value.reduce((a, b) => a * b, 1);
+          return sum;
+        }
+      })
+      .filter((val) => val) as number[]
+  ).reduce((acc, item) => acc + item, 0);
 }

@@ -1,58 +1,48 @@
 import * as fs from 'fs';
 import {
-  findIndex,
+  calculatePowersSum,
   getMatrixComparison,
   getRegexMatches,
-  multiplyValidGears,
 } from './helpers';
 
 export function solve() {
   const now = new Date().getTime();
   const input = fs.readFileSync('src/day3/input.txt').toString();
-  const splittedInput = input.split('\n');
+  const splittedInput: { stringValue: string; uniqueMultiplier: number }[] =
+    input.split('\n').map((input) => {
+      return {
+        stringValue: input,
+        uniqueMultiplier: Math.floor(100000 + Math.random() * 900000),
+      };
+    });
   const allMatches: number[] = [];
   const numbersNextGear: { [key: string]: number[] }[] = [];
-  const uniqueMultipliers: { [key: string]: number }[] = splittedInput.map(
-    (row) => {
-      return {
-        [splittedInput.indexOf(row)]: Math.floor(
-          100000 + Math.random() * 900000
-        ),
-      };
-    }
-  );
   for (const s of splittedInput) {
-    const matches = getRegexMatches(s);
+    const matches = getRegexMatches(s.stringValue);
     const comparisonRows = [
-      {
-        value: splittedInput[splittedInput.indexOf(s) - 1],
-        indexInCollection: splittedInput.indexOf(s) - 1,
-      },
-      {
-        value: splittedInput[splittedInput.indexOf(s) + 1],
-        indexInCollection: splittedInput.indexOf(s) + 1,
-      },
-    ].filter((val) => val.value);
+      splittedInput[splittedInput.indexOf(s) - 1],
+      splittedInput[splittedInput.indexOf(s) + 1],
+    ].filter((val) => val?.stringValue);
     for (const values of matches) {
       const previous = {
-        value: s[Number(values.index) - 1],
-        uniqueIndex:
-          findIndex(splittedInput.indexOf(s), uniqueMultipliers) *
-          Number(values.index),
+        value: s.stringValue[Number(values.index) - 1],
+        uniqueIndex: s.uniqueMultiplier * Number(values.index),
       };
       const next = {
-        value: s[Number(values.index) + Number(String(values.number).length)],
+        value:
+          s.stringValue[
+            Number(values.index) + Number(String(values.number).length)
+          ],
         uniqueIndex:
-          findIndex(splittedInput.indexOf(s), uniqueMultipliers) *
+          s.uniqueMultiplier *
           (Number(values.index) + Number(String(values.number).length) + 1),
       };
       const otherCharactersToCompare = getMatrixComparison(
         comparisonRows,
-        values,
-        uniqueMultipliers
+        values
       );
       const validMatches = [...otherCharactersToCompare, previous, next].filter(
-        (val) => val.value && val.value !== '.'
+        (val) => val?.value && val.value !== '.'
       );
       if (validMatches.length) {
         allMatches.push(values.number);
@@ -80,8 +70,7 @@ export function solve() {
   console.log(sum);
 
   //Part 2
-  const validGears = multiplyValidGears(numbersNextGear);
-  const powersSum = validGears.reduce((acc, item) => acc + item, 0);
+  const powersSum = calculatePowersSum(numbersNextGear);
   console.log(powersSum);
 
   console.log('TIME ELAPSED', (new Date().getTime() - now) / 1000);
