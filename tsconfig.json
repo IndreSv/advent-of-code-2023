@@ -14,7 +14,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@codeadvent2023/source": ["src/index.ts"]
+      "@daily-tasks/source": ["src/index.ts"]
     }
   },
   "files": [],
