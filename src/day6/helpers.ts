@@ -12,14 +12,13 @@ export function getInput() {
 
 export function getMergedInput() {
   const input = fs.readFileSync('src/day6/input.txt').toString();
-  const time = input
-    .split('\n')[0]
+  const lines = input.split('\n');
+  const time = lines[0]
     .split('Time:')[1]
     .split(' ')
     .filter((item) => item)
     .join('');
-  const record = input
-    .split('\n')[1]
+  const record = lines[1]
     .split('Distance:')[1]
     .split(' ')
     .filter((item) => item)
@@ -27,21 +26,12 @@ export function getMergedInput() {
   return [time, record];
 }
 
-export function getMaxWins(race: { time: number; record: number }): number {
-  const allGames = Array.from(Array(race.time).keys(), (n) => n + 1);
-  const filteredGames = allGames.filter(
-    (item) => (race.time - item) * item > race.record
-  );
-  const tempMax: number[] = [];
-  const tempMin: number[] = [];
-
-  const chunkSize = 100000;
-  for (let i = 0; i < filteredGames.length; i += chunkSize) {
-    const chunk = filteredGames.slice(i, i + chunkSize);
-    tempMax.push(Math.max(...chunk));
-    tempMin.push(Math.min(...chunk));
+export function getMaxWins(time: number, record: number): number {
+  let length = 0;
+  for (let i = time; i > 0; i--) {
+    if ((time - i) * i > record) {
+      length++;
+    }
   }
-  const maxWins = Math.max(...tempMax);
-  const minWins = Math.min(...tempMin);
-  return maxWins - minWins + 1;
+  return length;
 }

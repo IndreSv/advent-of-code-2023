@@ -62,7 +62,7 @@ export function getFinalDestination(
     for (const set of normalisedInput[item]) {
       if (destination >= set[1] && set[1] + set[2] >= destination) {
         if (destination >= set[1] && set[1] + set[2] > destination) {
-          allowedToAdd.push(set[1] + set[2] - destination - 1);
+          allowedToAdd.push(set[1] + set[2] - destination);
         }
         destination = set[0] + (destination - set[1]);
         break;

@@ -1,6 +1,7 @@
 import { getFinalDestination, getNormalisedInput, getSeeds } from './helpers';
 
 async function solve() {
+  const now = new Date().getTime();
   const seeds = getSeeds();
   const normalisedInput = getNormalisedInput();
 
@@ -23,11 +24,13 @@ async function solve() {
         if (!finalDestination2 || tempResult[0] < finalDestination2) {
           finalDestination2 = tempResult[0];
         }
-        i = i + tempResult[1] + 1;
+        i = i + tempResult[1];
       }
     }
   }
   console.log(finalDestination2);
+  //2ms
+  console.log('ELAPSED', new Date().getTime() - now);
 }
 
 solve();
