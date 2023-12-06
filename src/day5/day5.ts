@@ -5,37 +5,28 @@ async function solve() {
   const normalisedInput = getNormalisedInput();
 
   //PART 1
-  const finalDestPart1 = getFinalDestination(seeds, normalisedInput);
-  console.log(finalDestPart1);
+  const destinations = [];
+  for (const seed of seeds) {
+    const finalDestPart1 = getFinalDestination(seed, normalisedInput)[0];
+    destinations.push(finalDestPart1);
+  }
+  const resultPart1 = Math.min(...destinations);
+  console.log(resultPart1);
 
   //PART 2
-  const now = new Date().getTime();
-
   let finalDestination2: number;
   for (const seed of seeds) {
     if (seeds.indexOf(seed) === 0 || seeds.indexOf(seed) % 2 === 0) {
-      let tempRange: number[] = [];
-      for (let i = 0; i < seeds[seeds.indexOf(seed) + 1]; i++) {
-        tempRange.push(seed + i);
-        if (tempRange.length > 1000000) {
-          const tempResult = getFinalDestination(tempRange, normalisedInput);
-          if (!finalDestination2 || tempResult < finalDestination2) {
-            finalDestination2 = tempResult;
-          }
-          tempRange = [];
+      let i = 0;
+      while (i < seeds[seeds.indexOf(seed) + 1]) {
+        const tempResult = getFinalDestination(seed + i, normalisedInput);
+        if (!finalDestination2 || tempResult[0] < finalDestination2) {
+          finalDestination2 = tempResult[0];
         }
-      }
-      if (tempRange.length) {
-        const tempResult = getFinalDestination(tempRange, normalisedInput);
-        if (!finalDestination2 || tempResult < finalDestination2) {
-          finalDestination2 = tempResult;
-        }
-        tempRange = [];
+        i = i + tempResult[1] + 1;
       }
     }
   }
-  //Takes around 9 minutes, needs to be optimised
-  console.log('TIME ELAPSED minutes', (new Date().getTime() - now) / 1000 / 60);
   console.log(finalDestination2);
 }
 

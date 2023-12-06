@@ -38,11 +38,11 @@ export function getNormalisedInput() {
       trimmedValue.forEach((set) => {
         const [destinationRangeStart, sourceRangeStart, length] =
           set.split(' ');
-        rangeMap.push({
-          destinationRangeStart: Number(destinationRangeStart),
-          sourceRangeStart: Number(sourceRangeStart),
-          length: Number(length),
-        });
+        rangeMap.push([
+          Number(destinationRangeStart),
+          Number(sourceRangeStart),
+          Number(length),
+        ]);
       });
       acc[orderMapping[key]] = rangeMap;
       return acc;
@@ -50,33 +50,28 @@ export function getNormalisedInput() {
 }
 
 export function getFinalDestination(
-  seeds: number[],
+  seed: number,
   normalisedInput: {
-    [x: number]: {
-      sourceRangeStart: number;
-      destinationRangeStart: number;
-      length: number;
-    }[];
+    [x: number]: [number, number, number][];
   }
 ) {
   let finalDestination: number;
-  for (const seed of seeds) {
-    let destination = Number(seed);
-    for (const item in normalisedInput) {
-      for (const set of normalisedInput[item]) {
-        if (
-          destination >= set.sourceRangeStart &&
-          set.sourceRangeStart + set.length >= destination
-        ) {
-          destination =
-            set.destinationRangeStart + (destination - set.sourceRangeStart);
-          break;
+  const allowedToAdd = [];
+  let destination = Number(seed);
+  for (const item in normalisedInput) {
+    for (const set of normalisedInput[item]) {
+      if (destination >= set[1] && set[1] + set[2] >= destination) {
+        if (destination >= set[1] && set[1] + set[2] > destination) {
+          allowedToAdd.push(set[1] + set[2] - destination - 1);
         }
+        destination = set[0] + (destination - set[1]);
+        break;
       }
     }
-    if (!finalDestination || destination < finalDestination) {
-      finalDestination = destination;
-    }
   }
-  return finalDestination;
+  if (!finalDestination || destination < finalDestination) {
+    finalDestination = destination;
+  }
+  const total = Math.min(...allowedToAdd);
+  return [finalDestination, total];
 }
