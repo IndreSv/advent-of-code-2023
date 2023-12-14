@@ -5,7 +5,7 @@ import {
   getMirrorToStartLength,
 } from './helpers';
 
-async function solve() {
+function solve() {
   const result = getInput();
   let sum = 0;
   for (const mirror of result) {
