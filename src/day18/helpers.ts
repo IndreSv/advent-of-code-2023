@@ -11,6 +11,13 @@ const directionToPath = {
   U: { x: 0, y: -1 },
 };
 
+const codeToDirection = {
+  0: 'R',
+  1: 'D',
+  2: 'L',
+  3: 'U',
+};
+
 export function fillOutterLine(
   input: string[],
   curr = { x: 0, y: 0 }
@@ -33,6 +40,30 @@ export function fillOutterLine(
     coordinates.push(current);
   }
   return { coordinates, outterLineLength };
+}
+
+export function fillOutterLinePart2(
+  input: string[],
+  curr = { x: 0, y: 0 }
+): { coordinates2: { x: number; y: number }[]; outterLineLength2: number } {
+  const coordinates2 = [];
+  let current = curr;
+  coordinates2.push(current);
+  let outterLineLength2 = 0;
+
+  for (const i of input) {
+    const splitted = i.split(' ');
+    const hex = splitted[2].substring(2, 8);
+    const length = parseInt(hex.substring(0, 5), 16);
+    const directionCode = codeToDirection[hex.substring(5)];
+    current = {
+      x: current.x + directionToPath[directionCode].x * length,
+      y: current.y + directionToPath[directionCode].y * length,
+    };
+    outterLineLength2 = outterLineLength2 + length;
+    coordinates2.push(current);
+  }
+  return { coordinates2, outterLineLength2 };
 }
 
 export function totalFilled(
